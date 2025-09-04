@@ -56,8 +56,15 @@ def retrieve(query, top_k=3):
     return "\n\n".join([id_to_chunk[i] for i in I[0] if i != -1])
 
 def rag_query(query, top_k=3):
-    #context = retrieve(query, top_k=top_k)
-    prompt = f"You are stress estimator. You will assign scores in 5 scale. If the score is 5, You should ask him/her to talk with a therapist. Also alsways show the score. The user said, \n\"{query}\" You go ahead!"
+    context = retrieve(query, top_k=top_k)
+    prompt = f"""Based on the following context, please answer the user's question. If the context doesn't contain enough information to answer the question, please say so.
+
+Context:
+{context}
+
+User Question: {query}
+
+Please provide a helpful and accurate answer based on the context provided."""
     try:
         response = g_model.generate_content(prompt)
         return response.text.strip()
